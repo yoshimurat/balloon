@@ -17,6 +17,9 @@ var Balloon = function (arg) {
 	var bal_cnt = 0;
 	var bal_cmb = 0;
 	var moveflag = true;
+	var movev = 1;
+	var randmove = false;
+	var ft = 0;
 	var p = null;
 	var state = 0;
 	var score = 0;
@@ -87,6 +90,7 @@ var Balloon = function (arg) {
 	var ballon = function (base) {
 		var th = obj(base);
 		th.tick = function() {
+			if (moveflag) th.x += movev;
 			th.age++;
 			return th.age;
 		};
@@ -96,6 +100,7 @@ var Balloon = function (arg) {
 	var lightning = function (base) {
 		var th = obj(base);
 		th.tick = function() {
+			if (moveflag) th.x += movev;
 			th.age++;
 			return th.age;
 		};
@@ -161,6 +166,7 @@ var Balloon = function (arg) {
 	};
 
 	var init0 = function () {
+//		alert(ene_table[0].split(""));
 		ene = [];
 		bg = [];
 		frag = [];
@@ -168,7 +174,7 @@ var Balloon = function (arg) {
 		score = 0;
 		kas = 0;
 		level = 1;
-		p = player({x: (w - 2) / 2, y: h - 16, v: 0});
+		p = player({x: (w - 2) / 2, y: h/2, vy: -4});
 		if (loaded == 0) {
 			arg.document.getElementById("c1").style.visibility = 'hidden';
 			for (var i = 0; i < sp_name.length; i++) {
@@ -195,25 +201,32 @@ var Balloon = function (arg) {
 			draw();
 			return;
 		}
-/*		
-		if (ene_schedule[t] != null) {
-			if (ene_schedule[t][1] == -1 || ene_schedule[t][1] == level) {
-				ene[ene.length] = enemy({
-					md: ene_schedule[t][0],
-					lv: ene_schedule[t][1],
-					ty: ene_schedule[t][2],
-					pt: ene_schedule[t][3],
-					x:  ene_schedule[t][4],
-					y:  ene_schedule[t][5],
-					v:  ene_schedule[t][6],
-					theta: ene_schedule[t][7],
-					cycle: ene_schedule[t][8],
-					txt: ene_schedule[t][9],
-					life: ene_spec[ene_schedule[t][3]][0]
-				});
+
+		if (state == 1) {
+			if (randmove) {
+				if (t > 300) {
+					randmove = false;
+					t = 0;
+				}
+			} else {
+				if (ft == 0) {
+					var tmp = Math.floor(t/D);
+					if (tmp > ene_table.length - 1) {
+						randmove = true;
+						t = 0;
+					}
+					var str = ene_table[tmp].split("");
+					for (var i = 0; i < str.length; i++) {
+						if (str[i] == "1") {
+							lightn[lightn.length] = lightning({x: -D/2, y:D*i+D/2});
+						} else if (str[i] == "2") {
+							bal[bal.length] = balloon({x: -D/2, y:D*i+D/2});
+						}
+					}
+				}
 			}
+
 		}
-*/
 		for (var i = 0; i < bal.length;) {
 			bal[i].tick();
 			if (bal[i].isout()) bal.splice(i,1);
@@ -241,6 +254,7 @@ var Balloon = function (arg) {
 			else i++;
 		}
 		draw();
+		if (++ft == 16) ft = 0;
 		if (t++ > t_cycle) {
 			level++;
 			t = 0;
@@ -297,25 +311,11 @@ var Balloon = function (arg) {
 			ctx[1].fillRect(frag[i].x - frag[i].size/2, frag[i].y - frag[i].size/2, frag[i].size, frag[i].size);
 		}
 		ctx[1].fillStyle = "#ffffff";
-		for (var i = 0; i < ene.length;i++) {
-			ctx[1].save();
-			ctx[1].translate(ene[i].x, ene[i].y);
-			ctx[1].rotate(ene[i].btheta);
-			ctx[1].translate(-ene[i].x, -ene[i].y);
-			var tmp = ene[i].age < -5 ? 5 : ene[i].age < 0 ? 6 : ene[i].ty;
-			if (ene[i].ty == 99) {
-				if (state == 1) ctx[1].fillText("LEVEL "+level, ene[i].x, ene[i].y);
-			} else {
-				ctx[1].drawImage(sp[0], tmp * D, 0, ene[i].size, ene[i].size, ene[i].x-ene[i].size/2,ene[i].y-ene[i].size/2,ene[i].size,ene[i].size);
-			}      
-			ctx[1].restore();
+		for (var i = 0; i < lightn.length;i++) {
+			ctx[1].drawImage(sp[0], 1 * D, 0, lightn[i].size, lightn[i].size, lightn[i].x-lightn[i].size/2,lightn[i].y-lightn[i].size/2,lightn[i].size,lightn[i].size);
 		}
 
 		ctx[1].fillStyle = "#ffffff";
-		for (var i = 0; i < blt_e.length;i++) {
-			ctx[1].fillRect(blt_e[i].x - blt_e[i].size/2, blt_e[i].y - blt_e[i].size/2, blt_e[i].size, blt_e[i].size);
-		}
-
 		if (state == 3) {
 			ctx[1].fillText("GAME OVER",145, h/2);
 			ctx[1].fillText("hit '1' key to start new game", 100, h/2+25);
@@ -324,8 +324,11 @@ var Balloon = function (arg) {
 		}
 
 		ctx[1].fillText("SCORE", 5,15);
-		ctx[1].fillText(score, 65, 15);
+		ctx[1].fillText(score, 75, 15);
+		ctx[1].fillText("BALLOON", 5, 30);
+		ctx[1].fillText(bal_cnt, 75, 30);
 		ctx[1].fillText("LEVEL  " + level, w-75, 15);
+		ctx[1].fillText(lightn.length, w-75, 30);
 		ctx[0].putImageData(ctx[1].getImageData(0,0,w,h),0,0);
 	};
 
@@ -347,6 +350,7 @@ var Balloon = function (arg) {
 			if (state == 0 && val == 1) {
 				state = 1;
 				t = 0;
+				ft = 0;
 				init0();
 			} else if (state == 3 && val == 1) {
 				state = 0;
@@ -354,10 +358,11 @@ var Balloon = function (arg) {
 		}
 	};
 
-	var table = [
+	var ene_table = [
 		"001000100000100000011",
 		"000000000000000000000",
-		"110000000011000001011"
+		"110000000011000001011",
+		"000000111000001110000"
 		];
 
 };
