@@ -28,7 +28,7 @@ var Balloon = function (arg) {
 	var in_r = 0;
 	var in_f = 0;
 	var bgcol = ['#ff00ff','#00ffff','#ffff00'];
-	var sp_name = ['sp0'];
+	var sp_name = ['balloon','bal'];
 	var sp = [];
 	var D = 16;
 	var level = 1;
@@ -111,9 +111,10 @@ var Balloon = function (arg) {
 		var th = obj(base);
 		th.life = base.life || 1;
 		th.lived = -1e4;
-		th.theta = Math.PI * 3 / 2;
+		//th.theta = Math.PI * 3 / 2;
 		th.vx = 0;
 		th.vy = 0;
+		th.forward = 1;
 		th.tick = function () {
 			if (th.checkifdead() >= 3) return th.age;
 			th.age++;
@@ -295,10 +296,12 @@ var Balloon = function (arg) {
 		ctx[1].fillRect(0, 0, w, h);
 		if (state == 1) {
 			ctx[1].save();
-			ctx[1].translate(p.x, p.y);
-			ctx[1].rotate(p.theta);
-			ctx[1].translate(-p.x, -p.y);
-			ctx[1].drawImage(sp[0],0,0,p.size,p.size,p.x-p.size/2,p.y-p.size/2,p.size,p.size);
+			if (p.forward == 1) {
+				ctx[1].scale(-1,1);
+				ctx[1].drawImage(sp[0],0,0,p.size,p.size,(p.x+p.size/2)*-1,p.y-p.size/2,p.size,p.size);
+			} else {
+				ctx[1].drawImage(sp[0],0,0,p.size,p.size,p.x-p.size/2,p.y-p.size/2,p.size,p.size);
+			}
 			ctx[1].restore();
 		}
 		for (var i = 0; i < bg.length;i++) {
@@ -311,8 +314,9 @@ var Balloon = function (arg) {
 			ctx[1].fillRect(frag[i].x - frag[i].size/2, frag[i].y - frag[i].size/2, frag[i].size, frag[i].size);
 		}
 		ctx[1].fillStyle = "#ffffff";
+		var tt = Math.floor(t/5)%2;
 		for (var i = 0; i < lightn.length;i++) {
-			ctx[1].drawImage(sp[0], 1 * D, 0, lightn[i].size, lightn[i].size, lightn[i].x-lightn[i].size/2,lightn[i].y-lightn[i].size/2,lightn[i].size,lightn[i].size);
+			ctx[1].drawImage(sp[1], D*(3+tt), 0, lightn[i].size, lightn[i].size, lightn[i].x-lightn[i].size/2,lightn[i].y-lightn[i].size/2,lightn[i].size,lightn[i].size);
 		}
 
 		ctx[1].fillStyle = "#ffffff";
@@ -343,8 +347,10 @@ var Balloon = function (arg) {
 	var mv = function (cd,val) {
 		if (cd == 37) {
 			in_l = val;
+			p.forward = 1;
 		} else if (cd == 39) {
 			in_r = val;
+			p.forward = 0;
 		} else if (cd == 90) {
 			in_f = val;
 			if (state == 0 && val == 1) {
