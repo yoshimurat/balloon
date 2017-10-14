@@ -5,13 +5,13 @@
   <script type="text/javascript" src="foo.js"></script>
 </head>
 <body>
-  <canvas id="c1" width="480" height="360"></canvas><canvas id="c2" width="480" height="360"></canvas>
+  <canvas id="c1" width="480" height="352"></canvas><canvas id="c2" width="480" height="352"></canvas>
 </body>
 <script type="text/javascript">
   var trip = new Balloon(this);
   addEventListener("keydown", trip.kd);
   addEventListener("keyup", trip.ku);
   trip.init();
-  setInterval(trip.tick, 21);
+  setInterval(trip.tick, 32);
 </script>
 </html>
