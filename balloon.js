@@ -237,9 +237,9 @@ z	};
 		} else {
 			var tmp = Math.floor(t/D);
 			if (tmp > lighttable.length - 1) {
-				randflag = true;
+				//randflag = true;
 				t = 0;
-				return;
+				//return;
 			}
 			if (spcnt === 0) {
 				var str = lighttable[tmp].split("");
@@ -308,10 +308,10 @@ z	};
 		for (var i = 0; i < bal.length; i++) {
 			if (Math.abs(bal[i].x-p.x) < D && Math.abs(bal[i].y-p.y) < D) {
 				bal[i].active = 0;
-				bal_cnt++;
+				var tmp = 500+20*(bal_cmb > 9 ? 10 : bal_cmb);
 				bal_cmb++;
-				var tmp = 200+20*(bal_cmb>10 ? 10 : bal_cmb);
-				if (bal_cmb > 0 && bal_cmb % 10 == 0) tmp = 2000;
+				bal_cnt++;
+				if (bal_cmb > 0 && bal_cmb % 20 == 0) tmp = 2000;
 				score += tmp;
 				if (bal_max < bal_cmb) bal_max = bal_cmb;
 				pt[pt.length] = point({x:bal[i].x, y:bal[i].y, text:tmp});
