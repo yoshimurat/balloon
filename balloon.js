@@ -202,7 +202,7 @@ z	};
 			arg.document.getElementById("c1").style.visibility = 'hidden';
 			for (var i = 0; i < sp_name.length; i++) {
 				sp[i] = new Image();
-				sp[i].src = sp_name[i]+".png";
+				sp[i].src = sp_name[i]+".gif";
 			}
 			ctx[1].font = "12px Consolas";
 			loaded = 1;
