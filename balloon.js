@@ -149,19 +149,19 @@ var Balloon = function (arg) {
 			if (th.checkifdead() >= 3) return th.age;
 			th.age++;
 			if (th.checkifdead() == 0) th.lived++;
-			th.vy += 0.22;
-			if (th.vy > 3) th.vy = 3;
+			th.vy += 0.20;
+			if (th.vy > 2.8) th.vy = 2.8;
 			if (in_f > 0) {
-				th.vx += (in_r - in_l)*(th.acc > 3 ? 0.25:0.35);
-				if (th.vx > 3) th.vx = 3;
-				if (th.vx < -3) th.vx = -3;
+				th.vx += (in_r - in_l)*(th.acc > 4 ? 0.20:0.24);
+				if (th.vx > 2.8) th.vx = 2.8;
+				if (th.vx < -2.8) th.vx = -2.8;
 			}
-			if (th.acc < 3) {
-				th.vy -= 0.5;
+			if (th.acc < 4) {
+				th.vy -= 0.36;
 			} else if (th.acc < 8 || in_f >0) {
-				th.vy -= 0.38;
+				th.vy -= 0.32;
 			}
-			if (th.vy < -3) th.vy = -3;
+			if (th.vy < -2.8) th.vy = -2.8;
 			th.x += th.vx;
 			th.y += th.vy;
 			if (th.x <= th.size / 2) th.x = th.size / 2;
